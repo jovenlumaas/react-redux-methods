@@ -7,6 +7,10 @@ codebase would be easy to maintain as it fully utilizes typescript intellisense
 component (consuming state, dispatching action). Typescript users would have a
 full advantage as it is built with typescript.
 
+## Installation
+
+    npm install react-redux-methods
+
 ## How to use?
 
 ### `Creating Redux Context (reducer, actions, selectors)`

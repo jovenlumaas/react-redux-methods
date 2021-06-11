@@ -1,7 +1,7 @@
 {
   "name": "react-redux-methods",
   "version": "1.0.0",
-  "description": "",
+  "description": "A lightweight and performant react-redux utilities that would help reduce the size of your codebase for creating redux boilerplates. As a result, your codebase would be easy to maintain as it fully utilizes typescript intellisense -- from creating redux context (reducers, actions, selectors) to your react component (consuming state, dispatching action). Typescript users would have a full advantage as it is built with typescript.",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "scripts": {
@@ -21,6 +21,7 @@
   "keywords": [
     "redux",
     "react-redux",
+    "redux-toolkit",
     "redux-methods",
     "redux-action",
     "redux-reducer",
@@ -31,9 +32,9 @@
   "author": "JOL",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/jovenlumaas/redux-methods/issues"
+    "url": "https://github.com/jovenlumaas/react-redux-methods/issues"
   },
-  "homepage": "https://github.com/jovenlumaas/redux-methods#readme",
+  "homepage": "https://github.com/jovenlumaas/react-redux-methods#readme",
   "devDependencies": {
     "@types/jest": "^26.0.23",
     "@types/lodash.get": "^4.4.6",
