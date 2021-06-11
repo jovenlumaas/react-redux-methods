@@ -1,6 +1,6 @@
 {
   "name": "react-redux-methods",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "A lightweight and performant react-redux utilities that would help reduce the size of your codebase for creating redux boilerplates. As a result, your codebase would be easy to maintain as it fully utilizes typescript intellisense -- from creating redux context (reducers, actions, selectors) to your react component (consuming state, dispatching action). Typescript users would have a full advantage as it is built with typescript.",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
