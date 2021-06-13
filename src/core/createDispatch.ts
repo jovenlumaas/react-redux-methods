@@ -1,22 +1,19 @@
 import type { Dispatch, AnyAction } from 'redux';
 
-type InferActionPayloadParam<A, T extends keyof A> = A[T] extends (payload: infer P) => any
-  ? P extends undefined
-    ? void
-    : P
-  : void;
+type TCreateDispatchFn<A extends Record<string, (...args: any[]) => any>> = <T extends keyof A>(
+  type: T,
+  ...args: Parameters<A[T]>
+) => void;
 
-type TCreateDispatchFn<A> = <T extends keyof A>(type: T, payload: InferActionPayloadParam<A, T>) => void;
-
-export const createDispatch = <D extends Dispatch<AnyAction>, A>(
+export const createDispatch = <D extends Dispatch<AnyAction>, A extends Record<string, (...args: any[]) => any>>(
   dispatch: D,
   action: A, // <--- 'action' is for typescript intellicense only
 ): TCreateDispatchFn<A> => {
-  return (type, payload) => {
-    if (payload === undefined) {
-      dispatch({ type });
+  return (type, ...args) => {
+    if (args.length === 1) {
+      dispatch({ type, payload: args[0] });
     } else {
-      dispatch({ type, payload });
+      dispatch({ type });
     }
   };
 };

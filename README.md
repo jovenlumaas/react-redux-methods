@@ -139,6 +139,8 @@ const App = ({
     </div>
   );
 };
+
+export default connector(App);
 ```
 
 You can also dispatch an action or get a state outside of your react component.
