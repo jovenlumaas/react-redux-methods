@@ -1,11 +1,6 @@
 # React-Redux Methods
 
-A lightweight and performant react-redux utilities that would help reduce the
-size of your codebase for creating redux boilerplate. As a result, your
-codebase would be easy to maintain as it fully utilizes typescript intellisense
--- from creating redux contexts (reducers, actions, selectors) to your react
-component (consuming state, dispatching action). Typescript users would have a
-full advantage as it is built with typescript.
+A lightweight react-redux toolkit for writing strong-typed, minimal code redux boilerplate.
 
 ## Installation
 

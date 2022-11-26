@@ -50,8 +50,10 @@ type TCreateReduxMethods = <
 export const createReduxMethods: TCreateReduxMethods = ({ initialState, reducers, selectionNode, selectors }) => {
   // compose a reducer function
   const reducer = (state: any = initialState, action: AnyAction) => {
-    if (reducers.hasOwnProperty(action.type)) {
-      return reducers[action.type](state, action as any);
+    const type = action.type.replace(`${selectionNode}/`, '');
+
+    if (reducers.hasOwnProperty(type)) {
+      return reducers[type](state, { ...action, plainType: type } as any);
     } else {
       return state as any;
     }
@@ -59,17 +61,19 @@ export const createReduxMethods: TCreateReduxMethods = ({ initialState, reducers
 
   // compose actions for react components to dispatch
   const actions = Object.keys(reducers).reduce((acc, key) => {
+    const type = `${selectionNode}/${key}`;
+
     const reducerMeta = reducers[key as keyof typeof reducers];
 
     if (reducerMeta.length === 2) {
       return {
         ...acc,
-        [key]: (payload: CreatePayload<any>) => ({ type: key, payload }),
+        [key]: (payload: CreatePayload<any>) => ({ type, payload }),
       };
     } else {
       return {
         ...acc,
-        [key]: () => ({ type: key }),
+        [key]: () => ({ type }),
       };
     }
   }, {} as any);
