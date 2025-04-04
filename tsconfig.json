@@ -1,8 +1,10 @@
 {
     "compilerOptions": {
+      "jsx": "react",
       "target": "es5",
       "module": "commonjs",
       "declaration": true,
+      "esModuleInterop": true,
       "outDir": "./lib",
       "strict": true,
       "allowJs": true,
