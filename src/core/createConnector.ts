@@ -27,7 +27,9 @@ const mapStateConnector = <S, MS extends MapStateCallback<S>>(
     const result = {} as any;
 
     for (const key in selectedState) {
-      result[key] = selectedState[key](state);
+      if (selectedState[key]) {
+        result[key] = selectedState[key](state);
+      }
     }
 
     return result as MapSelectorReturnType<ReturnType<MS>>;
