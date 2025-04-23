@@ -1,6 +1,14 @@
-import { connect, InferableComponentEnhancerWithProps } from 'react-redux';
+import { connect } from 'react-redux';
 
-export type PropsFromConnector<C> = C extends (component: React.ComponentType<infer P>) => any ? P : never;
+type InferEnhancer<TInjectedProps, TOwnProps = {}> = <
+  TComponent extends React.ComponentType<TInjectedProps & TOwnProps>,
+>(
+  component: TComponent,
+) => React.ComponentType<TOwnProps>;
+
+export type ConnectorProps<TConnector> = TConnector extends InferEnhancer<infer TInjectedProps, any>
+  ? TInjectedProps
+  : never;
 
 type MapSelectorReturnType<T> = {
   [K in keyof T]: T[K] extends (...args: any[]) => infer R ? R : never;
@@ -45,27 +53,27 @@ export interface IReduxConnectorFn<S, A> {
   <MS extends MapStateCallback<S>, MD extends MapDispatchCallback<A>, TOwnProps>(
     mapState: MS,
     mapDispatch: MD,
-  ): InferableComponentEnhancerWithProps<MapSelectorReturnType<ReturnType<MS>> & ReturnType<MD>, TOwnProps>;
+  ): InferEnhancer<MapSelectorReturnType<ReturnType<MS>> & ReturnType<MD>, TOwnProps>;
 
   /**
    * ReduxConnector 'mapState' overload.
    *
    * This overload maps the selected state to the react component with typescript intellisense.
    */
-  <MS extends MapStateCallback<S>, TOwnProps>(
-    mapState: MS,
-    mapDispatch?: null | undefined,
-  ): InferableComponentEnhancerWithProps<MapSelectorReturnType<ReturnType<MS>>, TOwnProps>;
+  <MS extends MapStateCallback<S>, TOwnProps>(mapState: MS, mapDispatch?: null | undefined): InferEnhancer<
+    MapSelectorReturnType<ReturnType<MS>>,
+    TOwnProps
+  >;
 
   /**
    * ReduxConnector 'mapDispatch' overload.
    *
    * This overload maps the selected action to the react component with typescript intellisense.
    */
-  <MD extends MapDispatchCallback<A>, TOwnProps>(
-    mapState: null | undefined,
-    mapDispatch: MD,
-  ): InferableComponentEnhancerWithProps<ReturnType<MD>, TOwnProps>;
+  <MD extends MapDispatchCallback<A>, TOwnProps>(mapState: null | undefined, mapDispatch: MD): InferEnhancer<
+    ReturnType<MD>,
+    TOwnProps
+  >;
 }
 
 /**
