@@ -1,4 +1,4 @@
-import { connect } from 'react-redux';
+import { connect, InferableComponentEnhancerWithProps } from 'react-redux';
 
 export type PropsFromConnector<C> = C extends (component: React.ComponentType<infer P>) => any ? P : never;
 
@@ -6,15 +6,8 @@ type MapSelectorReturnType<T> = {
   [K in keyof T]: T[K] extends (...args: any[]) => infer R ? R : never;
 };
 
-// type MapSelectorReturnType<T> = {
-//   [P in keyof T]: T[P] extends (...args: any[]) => infer R ? R : never;
-// };
-
 type MapStateCallback<S> = (selectors: S) => Record<string, (state: any) => any>;
 type MapDispatchCallback<A> = (actions: A) => Record<string, (...args: any[]) => any>;
-
-// type MapStateCallback<S> = (allSelectors: S) => any;
-// type MapDispatchCallback<A> = (actions: A) => any;
 
 const mapStateConnector = <S, MS extends MapStateCallback<S>>(
   selectors: S,
@@ -36,26 +29,6 @@ const mapStateConnector = <S, MS extends MapStateCallback<S>>(
   };
 };
 
-// const mapStateConnector = (selectors: any, mapState: any) => {
-//   let mapStateToProps = null;
-
-//   if (mapState) {
-//     mapStateToProps = (state: any) => {
-//       const selectedState = mapState(selectors);
-//       const selectedKeys = Object.keys(selectedState);
-//       return selectedKeys.reduce(
-//         (acc, key) => ({
-//           ...acc,
-//           [key]: selectedState[key](state),
-//         }),
-//         {},
-//       );
-//     };
-//   }
-
-//   return mapStateToProps as any;
-// };
-
 const mapDispatchConnector = <A, MD extends MapDispatchCallback<A>>(
   actions: A,
   mapDispatch?: MD | null,
@@ -63,24 +36,36 @@ const mapDispatchConnector = <A, MD extends MapDispatchCallback<A>>(
   return mapDispatch ? (mapDispatch(actions) as ReturnType<MD>) : undefined;
 };
 
-// const mapDispatchConnector = (actions: any, mapDispatch: any) => {
-//   let mapDispatchToProps;
-//   if (mapDispatch) mapDispatchToProps = mapDispatch(actions);
-//   return mapDispatchToProps;
-// };
-
 export interface IReduxConnectorFn<S, A> {
-  <MS extends MapStateCallback<S>, MD extends MapDispatchCallback<A>, TOwnProps = {}>(mapState: MS, mapDispatch: MD): (
-    component: React.ComponentType<any>,
-  ) => React.ComponentType<TOwnProps>;
+  /**
+   * ReduxConnector 'mapState' and 'mapDispatch' overload.
+   *
+   * This overload maps the selected state and action to the react component with typescript intellisense.
+   */
+  <MS extends MapStateCallback<S>, MD extends MapDispatchCallback<A>, TOwnProps>(
+    mapState: MS,
+    mapDispatch: MD,
+  ): InferableComponentEnhancerWithProps<MapSelectorReturnType<ReturnType<MS>> & ReturnType<MD>, TOwnProps>;
 
-  <MS extends MapStateCallback<S>, TOwnProps = {}>(mapState: MS, mapDispatch?: null | undefined): (
-    component: React.ComponentType<any>,
-  ) => React.ComponentType<TOwnProps>;
+  /**
+   * ReduxConnector 'mapState' overload.
+   *
+   * This overload maps the selected state to the react component with typescript intellisense.
+   */
+  <MS extends MapStateCallback<S>, TOwnProps>(
+    mapState: MS,
+    mapDispatch?: null | undefined,
+  ): InferableComponentEnhancerWithProps<MapSelectorReturnType<ReturnType<MS>>, TOwnProps>;
 
-  <MD extends MapDispatchCallback<A>, TOwnProps = {}>(mapState: null | undefined, mapDispatch: MD): (
-    component: React.ComponentType<any>,
-  ) => React.ComponentType<TOwnProps>;
+  /**
+   * ReduxConnector 'mapDispatch' overload.
+   *
+   * This overload maps the selected action to the react component with typescript intellisense.
+   */
+  <MD extends MapDispatchCallback<A>, TOwnProps>(
+    mapState: null | undefined,
+    mapDispatch: MD,
+  ): InferableComponentEnhancerWithProps<ReturnType<MD>, TOwnProps>;
 }
 
 /**
@@ -105,42 +90,25 @@ export interface IReduxConnectorFn<S, A> {
  * );
  */
 
-export const createConnector = <S, A>(selectors: S, actions: A): IReduxConnectorFn<S, A> => {
-  return (mapState: any, mapDispatch: any) => {
-    const mapStateToProps = mapStateConnector(selectors, mapState);
-    const mapDispatchToProps = mapDispatchConnector(actions, mapDispatch);
-    return connect(mapStateToProps, mapDispatchToProps);
+export const createConnector = <S, A>(selectors: S, actions: A) => {
+  return function connectWithMapFns<MS extends MapStateCallback<S>, MD extends MapDispatchCallback<A>>(
+    mapState: MS,
+    mapDispatch: MD,
+  ) {
+    const stateToProps = mapStateConnector(selectors, mapState);
+    const dispatchToProps = mapDispatchConnector(actions, mapDispatch);
+
+    const connector = connect(stateToProps, dispatchToProps);
+
+    return connector;
   };
 };
 
-// export interface IReduxConnectorFn<S, A> {
-//   /**
-//    * ReduxConnector 'mapState' and 'mapDispatch' overload.
-//    *
-//    * This overload maps the selected state and action to the react component with typescript intellisense.
-//    */
-//   <MS extends MapStateCallback<S>, MD extends MapDispatchCallback<A>, TOwnProps>(
-//     mapState: MS,
-//     mapDispatch: MD,
-//   ): InferableComponentEnhancerWithProps<MapSelectorReturnType<ReturnType<MS>> & ReturnType<MD>, TOwnProps>;
+// export const createConnector = <S, A>(selectors: S, actions: A): IReduxConnectorFn<S, A> => {
+//   return (mapState: any, mapDispatch: any) => {
+//     const mapStateToProps = mapStateConnector(selectors, mapState);
+//     const mapDispatchToProps = mapDispatchConnector(actions, mapDispatch);
 
-//   /**
-//    * ReduxConnector 'mapState' overload.
-//    *
-//    * This overload maps the selected state to the react component with typescript intellisense.
-//    */
-//   <MS extends MapStateCallback<S>, TOwnProps>(
-//     mapState: MS,
-//     mapDispatch?: null | undefined,
-//   ): InferableComponentEnhancerWithProps<MapSelectorReturnType<ReturnType<MS>>, TOwnProps>;
-
-//   /**
-//    * ReduxConnector 'mapDispatch' overload.
-//    *
-//    * This overload maps the selected action to the react component with typescript intellisense.
-//    */
-//   <MD extends MapDispatchCallback<A>, TOwnProps>(
-//     mapState: null | undefined,
-//     mapDispatch: MD,
-//   ): InferableComponentEnhancerWithProps<ReturnType<MD>, TOwnProps>;
-// }
+//     return connect(mapStateToProps, mapDispatchToProps);
+//   };
+// };
