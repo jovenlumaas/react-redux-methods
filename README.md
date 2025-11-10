@@ -20,9 +20,11 @@ This library helps you define reducers, actions, and selectors with complete Typ
 
     npm install react-redux-methods
 
-🚀 Getting Started
+---
 
-1️⃣ Create Redux Contexts (reducer, actions, selectors)
+## 🚀 Getting Started
+
+# 1️⃣ Create Redux Contexts (reducer, actions, selectors)
 
 ```ts
 import { createReduxMethods, ComposePayload } from 'react-redux-methods';
@@ -66,7 +68,7 @@ const [notificationsReducer, notificationsActions, notificationsSelectors] = cre
 export { notificationsReducer, notificationsActions, notificationsSelectors };
 ```
 
-2️⃣ Combine Reducers, Actions, and Selectors
+# 2️⃣ Combine Reducers, Actions, and Selectors
 
 ```ts
 import { combineReducers } from 'redux';
@@ -92,7 +94,7 @@ const selectors = {
 };
 ```
 
-3️⃣ Create Reusable Redux Connections
+# 3️⃣ Create Reusable Redux Connections
 
 Create a single file (e.g. connections.ts) to define your Redux utilities and connectors.
 
@@ -110,9 +112,10 @@ export const makeGroupDispatch = createGroupDispatch(actions);
 
 // ✅ Always gets the latest Redux state
 export const getValue = createStateSelector(store, selectors);
+export const useGetState = createStateSelectorHook(selectors);
 ```
 
-4️⃣ Connect Redux to Your React Component
+# 4️⃣ Connect Redux to Your React Component
 
 Use the reduxConnector helper to automatically inject typed state and actions.
 
@@ -142,7 +145,7 @@ const App = ({
 export default connector(App);
 ```
 
-5️⃣ Dispatch Actions or Get State Outside React Components
+# 5️⃣ Dispatch Actions or Get State Outside React Components
 
 You can also safely access and modify Redux state anywhere in your app.
 
@@ -162,23 +165,52 @@ export const getNotification = () => {
 };
 ```
 
-🧩 API Overview
+# 6️⃣ 🆕 Use createStateSelectorHook (Typed React Hook)
 
-| Function                  | Description                                                      |
-| ------------------------- | ---------------------------------------------------------------- |
-| **`createReduxMethods`**  | Generates reducers, actions, and selectors from a single config. |
-| **`createConnector`**     | Simplifies React-Redux `connect` usage with full typing.         |
-| **`createDispatch`**      | Creates a typed dispatch function for actions.                   |
-| **`createGroupDispatch`** | Combines related dispatchers for cleaner grouping.               |
-| **`createStateSelector`** | Returns the latest Redux state value anywhere in your app.       |
+The new createStateSelectorHook utility allows you to create a fully typed React hook
+that reads from your Redux selectors directly — without manual typing.
 
-🧠 TypeScript Advantages
+✅ Usage inside React components
 
-1. Intellisense everywhere — state, action names, and payloads are inferred.
-2. Compile-time safety — no more mismatched action types or payloads.
-3. Minimal imports — keep Redux logic compact and consistent.
+```ts
+import { useGetState } from '@/store/useGetState';
 
-🔄 Data Flow Overview
+function Dashboard() {
+  const user = useGetState('getUser'); // inferred type: User
+  const isLoggedIn = useGetState('getIsLoggedIn'); // inferred type: boolean
+
+  return <div>{isLoggedIn ? <p>Welcome back, {user.name}!</p> : <p>Please log in.</p>}</div>;
+}
+```
+
+💡 Type-safe and memoized — works seamlessly with reselect selectors too.
+
+---
+
+# 🧩 API Overview
+
+---
+
+| Function                      | Description                                                               |
+| ----------------------------- | ------------------------------------------------------------------------- |
+| **`createReduxMethods`**      | Generates reducers, actions, and selectors from a single config.          |
+| **`createConnector`**         | Simplifies React-Redux `connect` usage with full typing.                  |
+| **`createDispatch`**          | Creates a typed dispatch function for actions.                            |
+| **`createGroupDispatch`**     | Combines related dispatchers for cleaner grouping.                        |
+| **`createStateSelector`**     | Returns the latest Redux state value anywhere in your app.                |
+| **`createStateSelectorHook`** | 🆕 Creates a typed React hook for reading Redux state via your selectors. |
+
+---
+
+## 🧠 TypeScript Advantages
+
+- Full intellisense for state, action names, payloads, and selectors.
+- Compile-time safety — eliminates mismatched action/payload types.
+- Strongly typed hooks and utilities for both React and non-React usage.
+
+---
+
+## 🔄 Data Flow Overview
 
 Below is the simplified Redux data flow as implemented by react-redux-methods:
 
@@ -218,15 +250,17 @@ Below is the simplified Redux data flow as implemented by react-redux-methods:
            └────────────────────┘
 ```
 
-✅ Simplified syntax
-✅ Typed end-to-end
-✅ Reusable outside React
+- ✅ Simplified syntax
+- ✅ Typed end-to-end
+- ✅ Reusable outside React
 
-🔁 Migration from Vanilla Redux
+---
+
+# 🔁 Migration from Vanilla Redux
 
 If you’re coming from standard Redux setup, here’s a comparison.
 
-🧱 Classic Redux (verbose)
+# 🧱 Classic Redux (verbose)
 
 ```ts
 // action types
@@ -254,7 +288,7 @@ export function notificationReducer(state = initialState, action: any) {
 export const getNotificationMessage = (state: any) => state.notification.message;
 ```
 
-⚡ Using react-redux-methods
+# ⚡ Using react-redux-methods
 
 ```ts
 import { createReduxMethods, ComposePayload } from 'react-redux-methods';
@@ -279,9 +313,9 @@ dispatchAction('setNotification', 'Hello!');
 getValue('getNotificationMessage');
 ```
 
-✅ No manual action types
-✅ No switch statements
-✅ Strong typing by default
+- ✅ No manual action types
+- ✅ No switch statements
+- ✅ Strong typing by default
 
 ⚖️ License
 MIT © 2025
