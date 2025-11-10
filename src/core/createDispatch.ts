@@ -11,9 +11,9 @@ export const createDispatch = <D extends Dispatch<AnyAction>, A extends Record<s
 ): TCreateDispatchFn<A> => {
   return (type, ...args) => {
     if (args.length === 1) {
-      dispatch({ type, payload: args[0] });
+      dispatch({ type, payload: args[0] } as any);
     } else {
-      dispatch({ type });
+      dispatch({ type } as any);
     }
   };
 };
